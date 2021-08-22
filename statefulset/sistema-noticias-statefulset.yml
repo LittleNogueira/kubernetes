@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sistema-noticias-statefulset
+spec:
+  replicas: 1
+  serviceName: svc-sistema-noticias
+  selector:
+    matchLabels:
+      app: sistema-noticias
+  template:
+    metadata:
+      name:  sistema-noticias
+      labels:
+        app: sistema-noticias
+    spec:
+      containers:
+        - name: sistema-noticias-container   
+          image: aluracursos/sistema-noticias:1
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+            failureThreshold: 3
+            initialDelaySeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+            failureThreshold: 5
+            initialDelaySeconds: 3
+          volumeMounts:
+            - name: imagens
+              mountPath: /var/www/html/uploads
+            - name: sessao
+              mountPath: /tmp
+          ports:
+            - name:  server
+              containerPort:  80
+              protocol: TCP
+          envFrom:
+            - configMapRef: 
+                name: sistema-configmap
+      volumes:
+        - name: imagens
+          persistentVolumeClaim:
+            claimName: pvc-sistema-imagem
+        - name: sessao
+          persistentVolumeClaim:
+            claimName: pvc-sistema-sessao

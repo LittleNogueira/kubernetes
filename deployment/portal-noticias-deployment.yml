@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: portal-noticias-deployment
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: portal-noticias
@@ -23,3 +23,6 @@ spec:
           envFrom:
             - configMapRef: 
                 name: portal-configmap   
+          resources:
+            requests:
+              cpu: 10m
